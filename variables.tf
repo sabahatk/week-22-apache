@@ -23,11 +23,6 @@ variable "http_desc" {
   default = "HTTP"
 }
 
-variable "jenkins_desc" {
-  type    = string
-  default = "Jenkins"
-}
-
 variable "ssh_port" {
   type    = number
   default = 22
@@ -38,10 +33,6 @@ variable "http_port" {
   default = 80
 }
 
-variable "jenkins_port" {
-  type    = number
-  default = 8080
-}
 
 variable "outbound_port" {
   type    = number
@@ -70,12 +61,12 @@ variable "sg_tag" {
 
 variable "bucket_name" {
   type    = string
-  default = "my-tf-jenkins-bucket-may-2024-i382k4m2l"
+  default = "my-tf-apache-bucket-may-2024-i382k4m2l"
 }
 
 variable "bucket_tag" {
   type    = string
-  default = "Jenkins Buckets"
+  default = "Apache Buckets"
 }
 
 variable "ami_id" {
@@ -88,12 +79,42 @@ variable "instance_type_name" {
   default = "t2.micro"
 }
 
-variable "instance_name" {
+variable "lt_name" {
   type    = string
-  default = "JenkinsInstance"
+  default = "AmazonLinux"
 }
 
 variable "ud_filepath" {
   type    = string
   default = "~/environment/terraform-project-week22/user-data.sh"
+}
+
+variable "asg_name" {
+  type    = string
+  default = "ApacheASG"
+}
+
+variable "max_instance" {
+  type    = number
+  default = 5
+}
+
+variable "min_instance" {
+  type    = number
+  default = 2
+}
+
+variable "subnet_id_A" {
+  type    = string
+  default = "subnet-0c234b47e503eff16"
+}
+
+variable "subnet_id_B" {
+  type    = string
+  default = "subnet-064ce0202f126bfec"
+}
+
+variable "version_type" {
+  type    = string
+  default = "$Latest"
 }
