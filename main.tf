@@ -1,5 +1,11 @@
 #Set terraform providers
 terraform {
+  backend "s3" {
+    bucket = "my-tf-apache-bucket-may-2024-i382k4m2l"
+    key    = "project/backend-s3"
+    region = "us-east-1"
+  }
+
   required_providers {
     aws = {
       source = "hashicorp/aws"
@@ -9,10 +15,10 @@ terraform {
 
 
 provider "aws" {
-  region = "us-east-1"
+  region = var.region_name
 }
 
-#Add security group to allow port 22 and 80 traffic
+#Add security group to allow port 22 and 8080 traffic
 resource "aws_security_group" "TF_SG" {
   name        = var.sg_name
   description = var.sg_name
@@ -46,28 +52,27 @@ resource "aws_security_group" "TF_SG" {
   }
 }
 
-#Create launch template
+
 resource "aws_launch_template" "aws_lt" {
-  name_prefix            = "AmazonLinux"
-  image_id               = "ami-00beae93a2d981137"
-  instance_type          = "t2.micro"
+  name_prefix            = var.lt_name
+  image_id               = var.ami_id
+  instance_type          = var.instance_type_name
   vpc_security_group_ids = [aws_security_group.TF_SG.id]
   user_data              = filebase64(var.ud_filepath)
 }
 
-#Create autoscaling group
 resource "aws_autoscaling_group" "aws_asg" {
-  name                = "ApacheASG"
+  name                = var.asg_name
   max_size            = 5
   min_size            = 2
-  vpc_zone_identifier = ["subnet-0c234b47e503eff16", "subnet-064ce0202f126bfec"]
+  vpc_zone_identifier = [var.subnet_id_A, var.subnet_id_B]
   launch_template {
     id      = aws_launch_template.aws_lt.id
-    version = "$Latest"
+    version = var.version_type
   }
 }
 
-#Create s3 bucket
+#create s3 bucket
 resource "aws_s3_bucket" "Apache_Bucket" {
   bucket = var.bucket_name
 
@@ -75,5 +80,4 @@ resource "aws_s3_bucket" "Apache_Bucket" {
     Name = var.bucket_tag
   }
 }
-
 
